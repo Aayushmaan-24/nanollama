@@ -194,3 +194,9 @@ def print_summary(results : list[dict])->None:
             str(len(s["ttft"]))
         )
     console.print(table)
+    
+# ── 5. Main ───────────────────────────────────────────────────────
+
+if __name__ == "__main__":
+    results = run_benchmark(sample=5)
+    print_summary(results)
