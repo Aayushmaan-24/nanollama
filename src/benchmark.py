@@ -85,3 +85,11 @@ def run_inference(model: str, prompt: str) -> dict:
         "ram_delta_mb" : round(ram_after - ram_before, 1),
         "response" : "".join(full_respone).strip(),
     }
+    
+# ── 2. Warmup ─────────────────────────────────────────────────────
+
+def warmup(model: str) -> None:
+    """Run a throwaway prompt so model is loaded into memory."""
+    console.print(f"  [dim]Warmin up {model}... [/dim] ")
+    run_inference(model, "Hello, how are you?")
+    
