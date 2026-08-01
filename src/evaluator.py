@@ -76,3 +76,17 @@ Respond with ONLY this JSON, no explanation:
         console.print(f"[red]Judge error: {e}[/red]")
     
     return {"correctness": 0.0, "completeness": 0.0, "format": 0.0, "overall": 0.0}
+
+# ── 2. Load latest benchmark results ──────────────────────────────
+
+def load_latest_benchmark() -> list[dict]:
+    files = sorted([
+        f for f in os.listdir(RESULTS_DIR)
+        if f.startswith("benchmark_") and f.endswith(".json")
+    ])
+    if not files:
+        raise FileNotFoundError("No benchmark results found. Run `python -m src.benchmark` first.")
+    path = os.path.join(RESULTS_DIR, files[-1])
+    console.print(f"[cyan]Loading benchmark: {path}[/cyan]")
+    with open(path) as f:
+        return json.load(f)
