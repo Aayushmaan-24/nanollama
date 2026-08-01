@@ -93,3 +93,58 @@ def warmup(model: str) -> None:
     console.print(f"  [dim]Warmin up {model}... [/dim] ")
     run_inference(model, "Hello, how are you?")
     
+# ── 3. Full benchmark run ─────────────────────────────────────────
+
+def run_benchmark(
+    models: list[str] = MODELS,
+    prompts : list[str] = PROMPTS,
+    sample: int = None,
+) -> list[dict]:
+    """
+    Run all models and all prompts, sample => run first n prompts only."""
+    os.makedirs(RESULTS_DIR, exist_ok=True)
+    test_prompts = prompts[:sample] if sample else prompts
+    all_results = []
+    
+    console.rule("[bold yellow]LocalSLM Benchmark[/bold yellow]")
+    console.print(f"Models  : {models}")
+    console.print(f"Prompts : {len(test_prompts)}")
+    console.print(f"Hardware: CPU + Intel Iris GPU | 8GB RAM\n")
+    
+    for model in models:
+        console.rule(f"[bold cyan]{model}[/bold cyan]")
+        warmup(model)
+        
+        model_results = []
+        for i, item in enumerate(test_prompts):
+            console.print(
+                f"  [{i+1:02d}/{len(test_prompts)}] ",
+                f"[{item['difficulty']}] {item['prompt'][:50]}..."
+            )
+            result = run_inference(model, item['prompt'])
+            result.update({
+                "prompt_id" : item['id'],
+                "difficulty" : item['difficulty'],
+                "task" : item['task'],
+                "prompt" : item['prompt'],
+            })
+            model_results.append(result)
+            
+            if "error" not in result:
+                console.print(
+                    f"         ttft={result['ttft_ms']:.0f}ms  "
+                    f"tok/s={result['tokens_per_sec']:.1f}  "
+                    f"ram_delta={result['ram_delta_mb']:.0f}MB"
+                )
+            else:
+                console.print(f"         [red]ERROR: {result['error']}[/red]")
+        all_results.extend(model_results)
+        
+    # Save results to JSON file
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    path = f"{RESULTS_DIR}/benchmark_{ts}.json"
+    with open(path, "w") as f:
+        json.dump(all_results, f, indent = 2)
+    console.print(f"\n[green]✓ Raw results saved → {path}[/green]")
+    
+    return all_results
