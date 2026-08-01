@@ -12,6 +12,7 @@ from rich.console import Console
 from rich.table import Table
 from prompts import PROMPTS
 import requests
+from collections import defaultdict
 
 console = Console()
 
@@ -148,3 +149,48 @@ def run_benchmark(
     console.print(f"\n[green]✓ Raw results saved → {path}[/green]")
     
     return all_results
+
+# ── 4. Summary table ──────────────────────────────────────────────
+
+def print_summary(results : list[dict])->None:
+    
+    stats = defaultdict(lambda: {
+        "ttft" : [], "tok_s" : [], "ram" : [], "time" : []
+    })
+    
+    for r in results:
+        if "error" in r:
+            continue
+        m = r["model"]
+        stats[m]["ttft"].append(r["ttft_ms"])
+        stats[m]["tok_s"].append(r["tokens_per_sec"])
+        stats[m]["ram"].append(r["ram_delta_mb"])
+        stats[m]["time"].append(r["total_time_ms"])
+        
+    def avg(lst):
+        return round(sum(lst) / len(lst), 1) if lst else 0
+    
+    def p95(lst):
+        return round(sorted(lst)[int(len(lst)*0.95)], 1) if lst else 0
+    
+    table = Table(title="Benchmark Summary", show_header=True)
+    table.add_column("Model",        style="cyan")
+    table.add_column("TTFT p50 ms",  justify="right")
+    table.add_column("TTFT p95 ms",  justify="right")
+    table.add_column("Tok/s avg",    justify="right")
+    table.add_column("RAM delta MB", justify="right")
+    table.add_column("Prompts",      justify="right")
+    
+    for model in MODELS:
+        s = stats[model]
+        if not s["ttft"]:
+            continue
+        table.add_row(
+            model,
+            str(avg(s["ttft"])),
+            str(p95(s["ttft"])),
+            str(avg(s["tok_s"])),
+            str(avg(s["ram"])),
+            str(len(s["ttft"]))
+        )
+    console.print(table)
