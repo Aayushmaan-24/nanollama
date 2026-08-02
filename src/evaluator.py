@@ -217,3 +217,11 @@ def print_tradeoff_matrix(benchmark: list[dict], scored: list[dict]) -> None:
 
     console.print("\n[dim]Use fastest for latency-critical apps.")
     console.print("Use best quality for accuracy-critical tasks.[/dim]")
+
+# ── 6. Main ───────────────────────────────────────────────────────
+
+if __name__ == "__main__":
+    benchmark = load_latest_benchmark()
+    scored    = run_quality_eval(benchmark)
+    print_quality_summary(scored)
+    print_tradeoff_matrix(benchmark, scored)
