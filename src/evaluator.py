@@ -90,3 +90,41 @@ def load_latest_benchmark() -> list[dict]:
     console.print(f"[cyan]Loading benchmark: {path}[/cyan]")
     with open(path) as f:
         return json.load(f)
+    
+# ── 3. Full quality evaluation ─────────────────────────────────────
+
+def run_quality_eval(results: list[dict]) -> list[dict]:
+    """Score every response in the benchmark results."""
+    
+    scored = []
+    total = len(results)
+    
+    console.rule("[bold yellow]Quality Evaluation[/bold yellow]")
+    console.print(f"Judge model : {JUDGE_MODEL}")
+    console.print(f"Responses   : {total}\n")
+
+    for i, result in enumerate(results):
+        if "error" in result or not result.get("response"):
+            continue
+        console.print(
+            f"  [{i+1:02d}/{total}] {r['model']:15s} "
+            f"[{r['difficulty']}] {r['prompt'][:45]}..."
+        )
+        
+        quality = judge_response(result['prompt'], result['response'], result['task'])
+        entry = {**result, "quality": quality}
+        scored.append(entry)
+        
+        console.print(
+            f"           correct={quality['correctness']:.2f}  "
+            f"complete={quality['completeness']:.2f}  "
+            f"format={quality['format']:.2f}  "
+            f"overall={quality['overall']:.2f}"
+        )
+        
+        # save scored results
+        path = os.path.join(RESULTS_DIR, "quality_scores.json")
+        with open(path, "w") as f:
+            json.dump(scored, f, indent=2)
+        console.print(f"\n[green]✓ Quality scores saved → {path}[/green]")
+        return scored
