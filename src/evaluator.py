@@ -122,9 +122,12 @@ def run_quality_eval(results: list[dict]) -> list[dict]:
             f"overall={quality['overall']:.2f}"
         )
         
-        # save scored results
-        path = os.path.join(RESULTS_DIR, "quality_scores.json")
-        with open(path, "w") as f:
-            json.dump(scored, f, indent=2)
-        console.print(f"\n[green]✓ Quality scores saved → {path}[/green]")
-        return scored
+    # save scored results
+    path = os.path.join(RESULTS_DIR, "quality_scores.json")
+    with open(path, "w") as f:
+        json.dump(scored, f, indent=2)
+    console.print(f"\n[green]✓ Quality scores saved → {path}[/green]")
+    return scored
+    
+# ── 4. Summary table ───────────────────────────────────────────────
+
