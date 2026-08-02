@@ -172,3 +172,48 @@ def print_quality_summary(scored: list[dict]) -> None:
         )
         
         console.print(table)
+        
+# ── 5. Tradeoff matrix ─────────────────────────────────────────────
+
+def print_tradeoff_matrix(benchmark: list[dict], scored: list[dict]) -> None:
+    """Combine speed + quality into final recommendation matrix."""
+    
+    speed = defaultdict(list)
+    quality = defaultdict(list)
+    
+    for result in benchmark:
+        if "error" not in result:
+            speed[result['model']].append(result.get('tokens_per_sec', 0))
+            
+    for result in scored:
+        q = result.get("quality", {})
+        if q:
+            quality[result['model']].append(q.get('overall', 0))
+            
+    def avg(lst): 
+        return round(sum(lst)/len(lst), 2) if lst else 0
+    
+    console.rule("[bold yellow]Tradeoff Matrix[/bold yellow]")
+    console.print(f"{'Model':20s} {'Tok/s':>8} {'Quality':>9} {'Verdict'}")
+    console.print("─" * 60)
+    
+    rows = []
+    for model in ["llama3.2:3b", "gemma2:2b", "qwen2.5:3b"]:
+        s = avg(speed[model])
+        q = avg(quality[model])
+        rows.append((model, s, q))
+    
+    best_speed   = max(r[1] for r in rows)
+    best_quality = max(r[2] for r in rows)
+
+    for model, s, q in rows:
+        if s == best_speed:
+            verdict = "⚡ Fastest"
+        elif q == best_quality:
+            verdict = "🎯 Best quality"
+        else:
+            verdict = "⚖️  Balanced"
+        console.print(f"  {model:18s} {s:>8.1f} {q:>9.3f}   {verdict}")
+
+    console.print("\n[dim]Use fastest for latency-critical apps.")
+    console.print("Use best quality for accuracy-critical tasks.[/dim]")
