@@ -12,6 +12,7 @@ from rich.console import Console
 from rich.table import Table
 from prompts import PROMPTS
 import re
+from collections import defaultdict
 
 console = Console()
 
@@ -131,3 +132,43 @@ def run_quality_eval(results: list[dict]) -> list[dict]:
     
 # ── 4. Summary table ───────────────────────────────────────────────
 
+def print_quality_summary(scored: list[dict]) -> None:
+    
+    stats = defaultdict(lambda: {
+        "correctness": [], "completeness": [], "format": [], "overall": []
+    })
+    
+    for result in scored:
+        q = result.get("quality", {})
+        m = result['model']
+        for key in ["correctness", "completeness", "format", "overall"]:
+            if key in q:
+                stats[m][key].append(q[key])
+                
+    def avg(lst):
+        return round(sum(lst) /  len(lst), 3) if lst else 0
+    
+    table = Table(title="Quality Scores (LLM-as-Judge)", show_header=True)
+    table.add_column("Model",        style="cyan")
+    table.add_column("Correctness",  justify="right")
+    table.add_column("Completeness", justify="right")
+    table.add_column("Format",       justify="right")
+    table.add_column("Overall",      justify="right")
+    table.add_column("Samples",      justify="right")
+    
+    from prompts import PROMPTS
+    model_order = ["llama3.2:3b", "gemma2:2b", "qwen2.5:3b"]
+    for model in model_order:
+        s = stats[model]
+        if not s['overall']:
+            continue
+        table.add_row(
+            model,
+            str(avg(s["correctness"])),
+            str(avg(s["completeness"])),
+            str(avg(s["format"])),
+            str(avg(s["overall"])),
+            str(len(s["overall"])),
+        )
+        
+        console.print(table)
