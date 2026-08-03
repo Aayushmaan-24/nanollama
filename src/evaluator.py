@@ -108,8 +108,8 @@ def run_quality_eval(results: list[dict]) -> list[dict]:
         if "error" in result or not result.get("response"):
             continue
         console.print(
-            f"  [{i+1:02d}/{total}] {r['model']:15s} "
-            f"[{r['difficulty']}] {r['prompt'][:45]}..."
+            f"  [{i+1:02d}/{total}] {result['model']:15s} "
+            f"[{result['difficulty']}] {result['prompt'][:45]}..."
         )
         
         quality = judge_response(result['prompt'], result['response'], result['task'])
@@ -215,8 +215,8 @@ def print_tradeoff_matrix(benchmark: list[dict], scored: list[dict]) -> None:
             verdict = "⚖️  Balanced"
         console.print(f"  {model:18s} {s:>8.1f} {q:>9.3f}   {verdict}")
 
-    console.print("\n[dim]Use fastest for latency-critical apps.")
-    console.print("Use best quality for accuracy-critical tasks.[/dim]")
+    console.print("\n[dim]Use fastest for latency-critical apps.[/dim]")
+    console.print("[dim]Use best quality for accuracy-critical tasks.[/dim]")
 
 # ── 6. Main ───────────────────────────────────────────────────────
 
