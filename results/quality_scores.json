@@ -1,0 +1,287 @@
+[
+  {
+    "model": "llama3.2:3b",
+    "ttft_ms": 1870.207057999778,
+    "total_time_ms": 3990.0,
+    "tokens_per_sec": 2.0,
+    "token_count": 8,
+    "ram_delta_mb": 6.4,
+    "response": "The capital of France is Paris.",
+    "prompt_id": "e01",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What is the capital of France?",
+    "quality": {
+      "correctness": 1.0,
+      "completeness": 1.0,
+      "format": 1.0,
+      "overall": 1.0
+    }
+  },
+  {
+    "model": "llama3.2:3b",
+    "ttft_ms": 1199.423410000236,
+    "total_time_ms": 5027.7,
+    "tokens_per_sec": 5.2,
+    "token_count": 26,
+    "ram_delta_mb": 6.5,
+    "response": "CPU stands for Central Processing Unit. It's the primary component of a computer that performs calculations and executes instructions from software applications.",
+    "prompt_id": "e02",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What does CPU stand for?",
+    "quality": {
+      "correctness": 1.0,
+      "completeness": 1.0,
+      "format": 0.0,
+      "overall": 0.67
+    }
+  },
+  {
+    "model": "llama3.2:3b",
+    "ttft_ms": 985.9931340001822,
+    "total_time_ms": 1879.7,
+    "tokens_per_sec": 4.8,
+    "token_count": 9,
+    "ram_delta_mb": 3.7,
+    "response": "17 \u00d7 13 = 221.",
+    "prompt_id": "e03",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What is 17 multiplied by 13?",
+    "quality": {
+      "correctness": 1.0,
+      "completeness": 0.0,
+      "format": 0.0,
+      "overall": 0.33
+    }
+  },
+  {
+    "model": "llama3.2:3b",
+    "ttft_ms": 2471.0299739999755,
+    "total_time_ms": 5987.3,
+    "tokens_per_sec": 3.8,
+    "token_count": 23,
+    "ram_delta_mb": -0.5,
+    "response": "Here are three popular programming languages used for web development:\n\n1. JavaScript\n2. Python\n3. PHP",
+    "prompt_id": "e04",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "Name three programming languages used for web development.",
+    "quality": {
+      "correctness": 1.0,
+      "completeness": 0.0,
+      "format": 0.0,
+      "overall": 0.33
+    }
+  },
+  {
+    "model": "llama3.2:3b",
+    "ttft_ms": 1046.369046000109,
+    "total_time_ms": 46193.9,
+    "tokens_per_sec": 4.9,
+    "token_count": 225,
+    "ram_delta_mb": 24.8,
+    "response": "The time complexity of binary search is O(log n), where n is the number of elements in the sorted array.\n\nTo understand why, let's consider how binary search works:\n\n1. The algorithm starts by comparing the target element to the middle element of the current range.\n2. If the target element is less than the middle element, the algorithm repeats the process with the lower half of the range.\n3. If the target element is greater than the middle element, the algorithm repeats the process with the upper half of the range.\n\nThis process continues until the target element is found or the range is reduced to a single element.\n\nThe key insight here is that each comparison reduces the size of the search space by half. This means that the number of comparisons required to find the target element grows logarithmically with the size of the input array.\n\nMathematically, this can be represented as:\n\nT(n) = O(log n)\n\nwhere T(n) is the time complexity of the algorithm and n is the number of elements in the input array.\n\nThis makes binary search one of the most efficient algorithms for searching large datasets.",
+    "prompt_id": "e05",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What is the time complexity of binary search?",
+    "quality": {
+      "correctness": 1.0,
+      "completeness": 0.0,
+      "format": 0.0,
+      "overall": 0.33
+    }
+  },
+  {
+    "model": "gemma2:2b",
+    "ttft_ms": 1707.0450199998959,
+    "total_time_ms": 6765.7,
+    "tokens_per_sec": 2.1,
+    "token_count": 14,
+    "ram_delta_mb": 13.7,
+    "response": "The capital of France is **Paris**. \ud83c\uddeb\ud83c\uddf7",
+    "prompt_id": "e01",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What is the capital of France?",
+    "quality": {
+      "correctness": 1.0,
+      "completeness": 1.0,
+      "format": 0.0,
+      "overall": 0.67
+    }
+  },
+  {
+    "model": "gemma2:2b",
+    "ttft_ms": 1868.4255779999148,
+    "total_time_ms": 12214.0,
+    "tokens_per_sec": 2.7,
+    "token_count": 33,
+    "ram_delta_mb": -3.4,
+    "response": "CPU stands for **Central Processing Unit**. \n\nIt's the \"brain\" of your computer, responsible for carrying out instructions and performing calculations.",
+    "prompt_id": "e02",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What does CPU stand for?",
+    "quality": {
+      "correctness": 1.0,
+      "completeness": 1.0,
+      "format": 0.0,
+      "overall": 0.67
+    }
+  },
+  {
+    "model": "gemma2:2b",
+    "ttft_ms": 1162.8162789997987,
+    "total_time_ms": 7211.5,
+    "tokens_per_sec": 2.2,
+    "token_count": 16,
+    "ram_delta_mb": -5.8,
+    "response": "17 multiplied by 13 equals **221**.",
+    "prompt_id": "e03",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What is 17 multiplied by 13?",
+    "quality": {
+      "correctness": 1.0,
+      "completeness": 1.0,
+      "format": 0.0,
+      "overall": 0.67
+    }
+  },
+  {
+    "model": "gemma2:2b",
+    "ttft_ms": 1346.9372310000836,
+    "total_time_ms": 57638.5,
+    "tokens_per_sec": 2.7,
+    "token_count": 153,
+    "ram_delta_mb": 13.3,
+    "response": "Here are three popular programming languages used for web development:\n\n1. **HTML:**  Not a programming language in the traditional sense, but it's essential for structuring content on websites. It defines the elements and their arrangement (like headings, paragraphs, images). \n2. **CSS:**  (Cascading Style Sheets) Used to style the look and feel of web pages. It controls things like colors, fonts, layout, and responsiveness.\n3. **JavaScript:** A scripting language that adds interactivity and dynamic behavior to websites. It handles user interactions (like button clicks), manipulates content, and makes websites more engaging. \n\n\nLet me know if you'd like to explore any of these languages in more detail!",
+    "prompt_id": "e04",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "Name three programming languages used for web development.",
+    "quality": {
+      "correctness": 0.0,
+      "completeness": 0.0,
+      "format": 0.0,
+      "overall": 0.0
+    }
+  },
+  {
+    "model": "gemma2:2b",
+    "ttft_ms": 1201.3016149999203,
+    "total_time_ms": 48472.3,
+    "tokens_per_sec": 5.3,
+    "token_count": 256,
+    "ram_delta_mb": 0.6,
+    "response": "The time complexity of binary search is **O(log n)**, where 'n' represents the number of elements in the sorted array. \n\nHere's why:\n\n* **Divide and Conquer:** Binary search works by repeatedly dividing the search space in half.  \n    * At each step, it compares the target value with the middle element of the current subarray.\n    * If the target is equal to the middle element, we found it! \n    * If the target is smaller than the middle element, discard the right half; if larger, discard the left half.\n* **Logarithmic Reduction:** This process continues until the search space is reduced to a single element (or zero elements) where the target value is either found or not.  The number of comparisons required for this reduction is logarithmic in the size of the array.\n\n**Example:** \nImagine searching for a specific number in a sorted list of 100 elements.  Binary search would divide the list into halves repeatedly, reducing the search space by half with each step. This means you'd only need to compare about 32 numbers on average to find your target!\n\n\n**Key Points:**\n\n* **Sorted Input:** Binary search requires a sorted input",
+    "prompt_id": "e05",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What is the time complexity of binary search?",
+    "quality": {
+      "correctness": 1.0,
+      "completeness": 0.0,
+      "format": 0.0,
+      "overall": 0.33
+    }
+  },
+  {
+    "model": "qwen2.5:3b",
+    "ttft_ms": 1120.7105499997851,
+    "total_time_ms": 2102.1,
+    "tokens_per_sec": 3.8,
+    "token_count": 8,
+    "ram_delta_mb": 6.1,
+    "response": "The capital of France is Paris.",
+    "prompt_id": "e01",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What is the capital of France?",
+    "quality": {
+      "correctness": 1.0,
+      "completeness": 1.0,
+      "format": 1.0,
+      "overall": 1.0
+    }
+  },
+  {
+    "model": "qwen2.5:3b",
+    "ttft_ms": 819.4214079999256,
+    "total_time_ms": 5406.6,
+    "tokens_per_sec": 6.7,
+    "token_count": 36,
+    "ram_delta_mb": 0.2,
+    "response": "CPU stands for Central Processing Unit. It is often referred to as the \"brain\" of a computer because it carries out most of the processing tasks that make a computer function.",
+    "prompt_id": "e02",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What does CPU stand for?",
+    "quality": {
+      "correctness": 1.0,
+      "completeness": 1.0,
+      "format": 0.0,
+      "overall": 0.67
+    }
+  },
+  {
+    "model": "qwen2.5:3b",
+    "ttft_ms": 1099.3145519996688,
+    "total_time_ms": 2378.7,
+    "tokens_per_sec": 5.9,
+    "token_count": 14,
+    "ram_delta_mb": 3.2,
+    "response": "17 multiplied by 13 equals 221.",
+    "prompt_id": "e03",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What is 17 multiplied by 13?",
+    "quality": {
+      "correctness": 1.0,
+      "completeness": 1.0,
+      "format": 0.0,
+      "overall": 0.67
+    }
+  },
+  {
+    "model": "qwen2.5:3b",
+    "ttft_ms": 1226.9793340001343,
+    "total_time_ms": 27552.3,
+    "tokens_per_sec": 8.2,
+    "token_count": 226,
+    "ram_delta_mb": 8.9,
+    "response": "Certainly! Here are three popular programming languages used for web development:\n\n1. **JavaScript**: JavaScript is primarily known as the scripting language that runs in a user's browser to provide interactive elements on websites. It can be embedded into HTML files and allows developers to create dynamic, responsive, and interactive web pages.\n\n2. **Python**: While not traditionally associated with front-end web development (where JavaScript is more commonly used), Python is widely used for back-end web development through frameworks like Django and Flask. These frameworks allow developers to build robust and scalable applications that handle server-side logic, database interactions, and other backend tasks.\n\n3. **Java**: Java has also become popular in the realm of web development, particularly with the rise of JavaServer Pages (JSP) and Java Servlets. It is often used for building enterprise-level applications due to its platform independence and robust security features. Frameworks like Spring Boot further simplify the process of developing full-stack applications using Java.\n\nEach of these languages has its strengths and is suited for different types of web development projects, whether it's front-end user interfaces or back-end server-side logic.",
+    "prompt_id": "e04",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "Name three programming languages used for web development.",
+    "quality": {
+      "correctness": 0.0,
+      "completeness": 0.0,
+      "format": 0.0,
+      "overall": 0.0
+    }
+  },
+  {
+    "model": "qwen2.5:3b",
+    "ttft_ms": 1446.0977130001993,
+    "total_time_ms": 30632.5,
+    "tokens_per_sec": 5.7,
+    "token_count": 175,
+    "ram_delta_mb": -16.1,
+    "response": "The time complexity of binary search is \\(O(\\log n)\\).\n\nBinary search works by repeatedly dividing the search interval in half. Here's how it operates:\n\n1. **Initial Interval**: The algorithm starts with a sorted array and compares the target value to the middle element of the array.\n2. **Comparison and Division**: If the target value matches the middle element, the search is complete. If the target value is less than the middle element, the search continues in the lower half of the array; if greater, it continues in the upper half.\n3. **Repeat Process**: The process repeats on the new subarray until the target value is found or the subarray reduces to zero.\n\nEach step halves the size of the remaining portion of the array, leading to a logarithmic time complexity. This makes binary search very efficient for large datasets compared to linear search.",
+    "prompt_id": "e05",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What is the time complexity of binary search?",
+    "quality": {
+      "correctness": 1.0,
+      "completeness": 1.0,
+      "format": 1.0,
+      "overall": 1.0
+    }
+  }
+]

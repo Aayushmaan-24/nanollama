@@ -1,0 +1,107 @@
+[
+  {
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+    "prompt_id": "e01",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What is the capital of France?"
+  },
+  {
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+    "prompt_id": "e02",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What does CPU stand for?"
+  },
+  {
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+    "prompt_id": "e03",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What is 17 multiplied by 13?"
+  },
+  {
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+    "prompt_id": "e04",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "Name three programming languages used for web development."
+  },
+  {
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+    "prompt_id": "e05",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What is the time complexity of binary search?"
+  },
+  {
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+    "prompt_id": "e01",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What is the capital of France?"
+  },
+  {
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+    "prompt_id": "e02",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What does CPU stand for?"
+  },
+  {
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+    "prompt_id": "e03",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What is 17 multiplied by 13?"
+  },
+  {
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+    "prompt_id": "e04",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "Name three programming languages used for web development."
+  },
+  {
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+    "prompt_id": "e05",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What is the time complexity of binary search?"
+  },
+  {
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+    "prompt_id": "e01",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What is the capital of France?"
+  },
+  {
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+    "prompt_id": "e02",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What does CPU stand for?"
+  },
+  {
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+    "prompt_id": "e03",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What is 17 multiplied by 13?"
+  },
+  {
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+    "prompt_id": "e04",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "Name three programming languages used for web development."
+  },
+  {
+    "error": "HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+    "prompt_id": "e05",
+    "difficulty": "easy",
+    "task": "factual",
+    "prompt": "What is the time complexity of binary search?"
+  }
+]
