@@ -19,3 +19,20 @@ app = FastAPI(
     description="Offline LLM inference with model switching and latency tracking",
     version="1.0.0",
 )
+
+# ── Request/Response models ────────────────────────────────────────
+
+class GenerateRequest(BaseModel):
+    prompt:      str
+    model:       str  = "qwen2.5:3b"
+    max_tokens:  int  = 256
+    temperature: float = 0.1
+    
+# ── Helpers ────────────────────────────────────────────────────────
+
+def validate_model(model: str) -> None:
+    if model not in MODELS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Model '{model}' not available. Choose from: {MODELS}"
+        )
