@@ -36,3 +36,13 @@ def validate_model(model: str) -> None:
             status_code=400,
             detail=f"Model '{model}' not available. Choose from: {MODELS}"
         )
+
+# ── Routes ─────────────────────────────────────────────────────────
+
+@app.get("/")
+def root():
+    return {
+        "service":  "LocalSLM",
+        "models":   MODELS,
+        "endpoints": ["/generate", "/generate/stream", "/models", "/health", "/ui"],
+    }
