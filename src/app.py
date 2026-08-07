@@ -46,3 +46,16 @@ def root():
         "models":   MODELS,
         "endpoints": ["/generate", "/generate/stream", "/models", "/health", "/ui"],
     }
+    
+@app.get("/health")
+def health():
+    try:
+        response = requests.get(f"{OLLAMA_URL}/api/tags", timeout=3)
+        ollama_ok = response.status_code == 200
+    except Exception:
+        return {
+            "status":"ok" if ollama_ok else "degraded",
+            "ollama": ollama_ok,
+            "ram_used": round(psutil.virtual_memory().used / (1024 ** 3), 2),
+            "ram_total": round(psutil.virtual_memory().total / (1024 ** 3), 2),
+        }
