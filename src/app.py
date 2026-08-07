@@ -71,3 +71,57 @@ def list_models():
         "configured" : MODELS,
         "available" : available_models
     }
+    
+@app.post("/generate")
+def generate(request: GenerateRequest):
+    """Non-streaming generation with full latency breakdown in response."""
+    validate_model(request.model)
+    
+    ram_before = psutil.virtual_memory().used / 1024 / 1024
+    start = time.perf_counter()
+    first_token_time = None
+    full_response = []
+    token_count = 0
+    
+    try:
+        with requests.post(
+            f"{OLLAMA_URL}/api/generate",
+            json={
+                "model": request.model,
+                "prompt": request.prompt,
+                "stream": True,
+                "options" : {
+                    "temperature" : request.temperature,
+                    "num_predict" : request.max_tokens,
+                },
+            },
+            stream=True,
+            timeout=120,
+        ) as response:
+            for line in response.iter_lines():
+                if not line:
+                    continue
+                chunk = json.loads(line)
+                if first_token_time is None and chunk.get("response"):
+                    first_token_time = (time.perf_counter()-start)*1000
+                full_response.append(chunk.get("response",""))
+                if chunk.get("done"):
+                    token_count = chunk.get("eval_count", 0)
+                    break
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    total_ms = (time.perf_counter()-start)*1000
+    ram_after = psutil.virtual_memory().used / 1024 / 1024
+    
+    return {
+        "model": request.model,
+        "response" : "".join(full_response).strip(),
+        "latency" : {
+            "ttfs_ms":round(first_token_time or 0, 1),
+            "total_ms":round(total_ms, 1),
+            "tokens_per_sec":round(token_count / (total_ms/1000), 1),
+            "token_count":token_count,
+            "ram_delta_mb":round(ram_after-ram_before, 1),
+        },
+    }
