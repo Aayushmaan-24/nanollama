@@ -59,3 +59,15 @@ def health():
             "ram_used": round(psutil.virtual_memory().used / (1024 ** 3), 2),
             "ram_total": round(psutil.virtual_memory().total / (1024 ** 3), 2),
         }
+        
+@app.get("/models")
+def list_models():
+    try:
+        response = requests.get(f"{OLLAMA_URL}/api/tags", timeout=5)
+        available_models = [m['name'] for m in response.json().get("models",[])]
+    except Exception:
+        available_models = []
+    return {
+        "configured" : MODELS,
+        "available" : available_models
+    }
