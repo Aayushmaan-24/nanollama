@@ -24,10 +24,10 @@ app = FastAPI(
 
 class GenerateRequest(BaseModel):
     prompt:      str
-    model:       str  = "qwen2.5:3b"
-    max_tokens:  int  = 256
+    model:       str   = "qwen2.5:3b"
+    max_tokens:  int   = 256
     temperature: float = 0.1
-    
+
 # ── Helpers ────────────────────────────────────────────────────────
 
 def validate_model(model: str) -> None:
@@ -42,153 +42,150 @@ def validate_model(model: str) -> None:
 @app.get("/")
 def root():
     return {
-        "service":  "LocalSLM",
-        "models":   MODELS,
+        "service":   "LocalSLM",
+        "models":    MODELS,
         "endpoints": ["/generate", "/generate/stream", "/models", "/health", "/ui"],
     }
-    
+
 @app.get("/health")
 def health():
     try:
-        response = requests.get(f"{OLLAMA_URL}/api/tags", timeout=3)
-        ollama_ok = response.status_code == 200
+        resp = requests.get(f"{OLLAMA_URL}/api/tags", timeout=3)
+        ollama_ok = resp.status_code == 200
     except Exception:
-        return {
-            "status":"ok" if ollama_ok else "degraded",
-            "ollama": ollama_ok,
-            "ram_used": round(psutil.virtual_memory().used / (1024 ** 3), 2),
-            "ram_total": round(psutil.virtual_memory().total / (1024 ** 3), 2),
-        }
-        
+        ollama_ok = False
+    return {
+        "status":      "ok" if ollama_ok else "degraded",
+        "ollama":      ollama_ok,
+        "ram_used_gb": round(psutil.virtual_memory().used / 1024**3, 2),
+        "ram_total_gb": round(psutil.virtual_memory().total / 1024**3, 2),
+    }
+
 @app.get("/models")
 def list_models():
     try:
-        response = requests.get(f"{OLLAMA_URL}/api/tags", timeout=5)
-        available_models = [m['name'] for m in response.json().get("models",[])]
+        resp = requests.get(f"{OLLAMA_URL}/api/tags", timeout=5)
+        available = [m["name"] for m in resp.json().get("models", [])]
     except Exception:
-        available_models = []
+        available = []
     return {
-        "configured" : MODELS,
-        "available" : available_models
+        "configured": MODELS,
+        "available":  available,
     }
-    
+
 @app.post("/generate")
-def generate(request: GenerateRequest):
-    """Non-streaming generation with full latency breakdown in response."""
-    validate_model(request.model)
-    
-    ram_before = psutil.virtual_memory().used / 1024 / 1024
-    start = time.perf_counter()
+def generate(req: GenerateRequest):
+    """Non-streaming generation with full latency breakdown."""
+    validate_model(req.model)
+
+    ram_before       = psutil.virtual_memory().used / 1024 / 1024
+    start            = time.perf_counter()
     first_token_time = None
-    full_response = []
-    token_count = 0
-    
+    full_response    = []
+    token_count      = 0
+
     try:
         with requests.post(
             f"{OLLAMA_URL}/api/generate",
             json={
-                "model": request.model,
-                "prompt": request.prompt,
-                "stream": True,
-                "options" : {
-                    "temperature" : request.temperature,
-                    "num_predict" : request.max_tokens,
+                "model":   req.model,
+                "prompt":  req.prompt,
+                "stream":  True,
+                "options": {
+                    "temperature": req.temperature,
+                    "num_predict": req.max_tokens,
                 },
             },
             stream=True,
             timeout=120,
-        ) as response:
-            for line in response.iter_lines():
+        ) as resp:
+            for line in resp.iter_lines():
                 if not line:
                     continue
                 chunk = json.loads(line)
                 if first_token_time is None and chunk.get("response"):
-                    first_token_time = (time.perf_counter()-start)*1000
-                full_response.append(chunk.get("response",""))
+                    first_token_time = (time.perf_counter() - start) * 1000
+                full_response.append(chunk.get("response", ""))
                 if chunk.get("done"):
                     token_count = chunk.get("eval_count", 0)
                     break
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
-    total_ms = (time.perf_counter()-start)*1000
+
+    total_ms  = (time.perf_counter() - start) * 1000
     ram_after = psutil.virtual_memory().used / 1024 / 1024
-    
+
     return {
-        "model": request.model,
-        "response" : "".join(full_response).strip(),
-        "latency" : {
-            "ttfs_ms":round(first_token_time or 0, 1),
-            "total_ms":round(total_ms, 1),
-            "tokens_per_sec":round(token_count / (total_ms/1000), 1),
-            "token_count":token_count,
-            "ram_delta_mb":round(ram_after-ram_before, 1),
+        "model":    req.model,
+        "response": "".join(full_response).strip(),
+        "latency": {
+            "ttft_ms":        round(first_token_time or 0, 1),
+            "total_ms":       round(total_ms, 1),
+            "tokens_per_sec": round(token_count / (total_ms / 1000), 1),
+            "token_count":    token_count,
+            "ram_delta_mb":   round(ram_after - ram_before, 1),
         },
     }
 
 @app.post("/generate/stream")
-def generate_stream(request: GenerateRequest):
-    """
-    Streaming generation — returns tokens as SSE stream.
-    Latency headers: X-TTFT-Ms, X-Model
-    """
-    
-    validate_model(request.model)
-    
-    def generate_stream():
-        start = time.perf_counter()
+def generate_stream(req: GenerateRequest):
+    """Streaming generation — returns tokens as SSE stream."""
+    validate_model(req.model)
+
+    def stream_generator():
+        start            = time.perf_counter()
         first_token_time = None
-        
+
         try:
             with requests.post(
                 f"{OLLAMA_URL}/api/generate",
                 json={
-                    "model" : request.model,
-                    "prompt" : request.prompt,
-                    "stream" : True,
-                    "options" : {
-                        "temperature" : request.temperature,
-                        "num_predict" : request.max_tokens,
+                    "model":   req.model,
+                    "prompt":  req.prompt,
+                    "stream":  True,
+                    "options": {
+                        "temperature": req.temperature,
+                        "num_predict": req.max_tokens,
                     },
                 },
                 stream=True,
                 timeout=120,
-            ) as response:
-                for line in response.iter_lines():
+            ) as resp:
+                for line in resp.iter_lines():
                     if not line:
                         continue
                     chunk = json.loads(line)
                     token = chunk.get("response", "")
-                    
+
                     if first_token_time is None and token:
-                        first_token_time = (time.perf_counter()-start)*1000
-                        yield f"data : {json.dumps({'ttfr_ms': round(first_token_time, 1)})}\n\n"
-                    
+                        first_token_time = (time.perf_counter() - start) * 1000
+                        yield f"data: {json.dumps({'ttft_ms': round(first_token_time, 1)})}\n\n"
+
                     if token:
-                        yield f"data : {json.dumps({'token': token})}\n\n"
-                        
+                        yield f"data: {json.dumps({'token': token})}\n\n"
+
                     if chunk.get("done"):
-                        total_ms = (time.perf_counter()-start)*1000
-                        yield f"data : {json.dumps({'done': True, 'total_ms': round(total_ms, 1), 'token_count': chunk.get('eval_count',0)})}\n\n"
+                        total_ms = (time.perf_counter() - start) * 1000
+                        yield f"data: {json.dumps({'done': True, 'total_ms': round(total_ms, 1), 'token_count': chunk.get('eval_count', 0)})}\n\n"
                         break
+
         except Exception as e:
-            yield f"data : {json.dumps({'error': str(e)})}\n\n"
-            
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
+
     return StreamingResponse(
-        generate_stream(),
+        stream_generator(),
         media_type="text/event-stream",
         headers={
-            "X-Model": request.model,
-            "Cache-Control": "no-cache",
+            "X-Model":           req.model,
+            "Cache-Control":     "no-cache",
             "X-Accel-Buffering": "no",
         },
     )
-    
+
 # ── Simple browser UI ──────────────────────────────────────────────
 
 @app.get("/ui", response_class=HTMLResponse)
 def ui():
-    models_js = json.dumps(MODELS)
     return f"""<!DOCTYPE html>
 <html>
 <head>
@@ -218,9 +215,7 @@ def ui():
       padding: 20px; min-height: 160px; margin-top: 20px;
       white-space: pre-wrap; line-height: 1.7; font-size: 13px;
     }}
-    .metrics {{
-      display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap;
-    }}
+    .metrics {{ display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap; }}
     .metric {{
       background: #111118; border: 1px solid #1e1e2e; border-radius: 4px;
       padding: 8px 16px; font-size: 11px; color: #94a3b8;
@@ -241,7 +236,7 @@ def ui():
     </div>
     <div style="flex:1">
       <label>Max tokens</label>
-      <input type="number" id="max_tokens" value="256" style="width:100px">
+      <input type="number" id="max_tokens" value="512" style="width:100px">
     </div>
   </div>
 
@@ -271,52 +266,34 @@ def ui():
 
       if (!prompt) return;
 
-      output.textContent = '';
+      output.textContent = 'Generating...';
       metrics.style.display = 'none';
       document.querySelector('button').textContent = 'Generating...';
 
-      let ttft = null, totalMs = null, tokenCount = 0;
-      const start = performance.now();
-
       try {{
-        const resp = await fetch('/generate/stream', {{
+        const resp = await fetch('/generate', {{
           method: 'POST',
           headers: {{'Content-Type': 'application/json'}},
           body: JSON.stringify({{prompt, model, max_tokens}})
         }});
 
-        const reader = resp.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
+        const data = await resp.json();
 
-        while (true) {{
-          const {{done, value}} = await reader.read();
-          if (done) break;
-          buffer += decoder.decode(value, {{stream: true}});
-          const lines = buffer.split('\\n');
-          buffer = lines.pop();
-
-          for (const line of lines) {{
-            if (!line.startsWith('data: ')) continue;
-            const data = JSON.parse(line.slice(6));
-            if (data.ttft_ms) ttft = data.ttft_ms;
-            if (data.token)   output.textContent += data.token;
-            if (data.done) {{
-              totalMs    = data.total_ms;
-              tokenCount = data.token_count;
-            }}
-          }}
+        if (data.detail) {{
+          output.textContent = 'Error: ' + data.detail;
+        }} else {{
+          output.textContent = data.response;
+          document.getElementById('m-ttft').textContent   = data.latency.ttft_ms;
+          document.getElementById('m-total').textContent  = data.latency.total_ms;
+          document.getElementById('m-tps').textContent    = data.latency.tokens_per_sec;
+          document.getElementById('m-tokens').textContent = data.latency.token_count;
+          metrics.style.display = 'flex';
         }}
       }} catch(e) {{
         output.textContent = 'Error: ' + e.message;
       }}
 
       document.querySelector('button').textContent = 'Generate ▶';
-      document.getElementById('m-ttft').textContent   = ttft || '-';
-      document.getElementById('m-total').textContent  = totalMs || Math.round(performance.now() - start);
-      document.getElementById('m-tps').textContent    = tokenCount && totalMs ? Math.round(tokenCount / (totalMs/1000)) : '-';
-      document.getElementById('m-tokens').textContent = tokenCount || '-';
-      metrics.style.display = 'flex';
     }}
 
     document.getElementById('prompt').addEventListener('keydown', e => {{
