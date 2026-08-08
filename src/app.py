@@ -183,3 +183,145 @@ def generate_stream(request: GenerateRequest):
             "X-Accel-Buffering": "no",
         },
     )
+    
+# ── Simple browser UI ──────────────────────────────────────────────
+
+@app.get("/ui", response_class=HTMLResponse)
+def ui():
+    models_js = json.dumps(MODELS)
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+  <title>LocalSLM</title>
+  <style>
+    * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+    body {{ background: #0a0a0f; color: #e2e8f0; font-family: monospace; padding: 40px; }}
+    h1 {{ color: #7c3aed; margin-bottom: 4px; font-size: 24px; }}
+    p.sub {{ color: #64748b; font-size: 12px; margin-bottom: 32px; }}
+    .row {{ display: flex; gap: 12px; margin-bottom: 16px; align-items: center; }}
+    label {{ color: #94a3b8; font-size: 12px; margin-bottom: 6px; display: block; }}
+    select, textarea, input {{
+      background: #111118; border: 1px solid #1e1e2e; color: #e2e8f0;
+      border-radius: 4px; padding: 10px; font-family: monospace; font-size: 13px;
+      width: 100%;
+    }}
+    select {{ width: auto; padding: 10px 16px; }}
+    textarea {{ height: 120px; resize: vertical; }}
+    button {{
+      background: #7c3aed; color: white; border: none; padding: 10px 24px;
+      border-radius: 4px; font-family: monospace; font-weight: 700;
+      font-size: 13px; cursor: pointer; letter-spacing: 1px;
+    }}
+    button:hover {{ background: #6d28d9; }}
+    #output {{
+      background: #111118; border: 1px solid #1e1e2e; border-radius: 4px;
+      padding: 20px; min-height: 160px; margin-top: 20px;
+      white-space: pre-wrap; line-height: 1.7; font-size: 13px;
+    }}
+    .metrics {{
+      display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap;
+    }}
+    .metric {{
+      background: #111118; border: 1px solid #1e1e2e; border-radius: 4px;
+      padding: 8px 16px; font-size: 11px; color: #94a3b8;
+    }}
+    .metric span {{ color: #7c3aed; font-weight: 700; font-size: 14px; display: block; }}
+  </style>
+</head>
+<body>
+  <h1>LocalSLM ⚡</h1>
+  <p class="sub">Offline inference · Model switching · Streaming · Zero API cost</p>
+
+  <div class="row">
+    <div>
+      <label>Model</label>
+      <select id="model">
+        {''.join(f'<option value="{m}">{m}</option>' for m in MODELS)}
+      </select>
+    </div>
+    <div style="flex:1">
+      <label>Max tokens</label>
+      <input type="number" id="max_tokens" value="256" style="width:100px">
+    </div>
+  </div>
+
+  <div style="margin-bottom:16px">
+    <label>Prompt</label>
+    <textarea id="prompt" placeholder="Ask anything..."></textarea>
+  </div>
+
+  <button onclick="generate()">Generate ▶</button>
+
+  <div id="output">Output will appear here...</div>
+
+  <div class="metrics" id="metrics" style="display:none">
+    <div class="metric"><span id="m-ttft">-</span>TTFT (ms)</div>
+    <div class="metric"><span id="m-total">-</span>Total (ms)</div>
+    <div class="metric"><span id="m-tps">-</span>Tok/s</div>
+    <div class="metric"><span id="m-tokens">-</span>Tokens</div>
+  </div>
+
+  <script>
+    async function generate() {{
+      const prompt     = document.getElementById('prompt').value.trim();
+      const model      = document.getElementById('model').value;
+      const max_tokens = parseInt(document.getElementById('max_tokens').value);
+      const output     = document.getElementById('output');
+      const metrics    = document.getElementById('metrics');
+
+      if (!prompt) return;
+
+      output.textContent = '';
+      metrics.style.display = 'none';
+      document.querySelector('button').textContent = 'Generating...';
+
+      let ttft = null, totalMs = null, tokenCount = 0;
+      const start = performance.now();
+
+      try {{
+        const resp = await fetch('/generate/stream', {{
+          method: 'POST',
+          headers: {{'Content-Type': 'application/json'}},
+          body: JSON.stringify({{prompt, model, max_tokens}})
+        }});
+
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {{
+          const {{done, value}} = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, {{stream: true}});
+          const lines = buffer.split('\\n');
+          buffer = lines.pop();
+
+          for (const line of lines) {{
+            if (!line.startsWith('data: ')) continue;
+            const data = JSON.parse(line.slice(6));
+            if (data.ttft_ms) ttft = data.ttft_ms;
+            if (data.token)   output.textContent += data.token;
+            if (data.done) {{
+              totalMs    = data.total_ms;
+              tokenCount = data.token_count;
+            }}
+          }}
+        }}
+      }} catch(e) {{
+        output.textContent = 'Error: ' + e.message;
+      }}
+
+      document.querySelector('button').textContent = 'Generate ▶';
+      document.getElementById('m-ttft').textContent   = ttft || '-';
+      document.getElementById('m-total').textContent  = totalMs || Math.round(performance.now() - start);
+      document.getElementById('m-tps').textContent    = tokenCount && totalMs ? Math.round(tokenCount / (totalMs/1000)) : '-';
+      document.getElementById('m-tokens').textContent = tokenCount || '-';
+      metrics.style.display = 'flex';
+    }}
+
+    document.getElementById('prompt').addEventListener('keydown', e => {{
+      if (e.ctrlKey && e.key === 'Enter') generate();
+    }});
+  </script>
+</body>
+</html>"""
