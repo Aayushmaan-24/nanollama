@@ -125,3 +125,61 @@ def generate(request: GenerateRequest):
             "ram_delta_mb":round(ram_after-ram_before, 1),
         },
     }
+
+@app.post("/generate/stream")
+def generate_stream(request: GenerateRequest):
+    """
+    Streaming generation — returns tokens as SSE stream.
+    Latency headers: X-TTFT-Ms, X-Model
+    """
+    
+    validate_model(request.model)
+    
+    def generate_stream():
+        start = time.perf_counter()
+        first_token_time = None
+        
+        try:
+            with requests.post(
+                f"{OLLAMA_URL}/api/generate",
+                json={
+                    "model" : request.model,
+                    "prompt" : request.prompt,
+                    "stream" : True,
+                    "options" : {
+                        "temperature" : request.temperature,
+                        "num_predict" : request.max_tokens,
+                    },
+                },
+                stream=True,
+                timeout=120,
+            ) as response:
+                for line in response.iter_lines():
+                    if not line:
+                        continue
+                    chunk = json.loads(line)
+                    token = chunk.get("response", "")
+                    
+                    if first_token_time is None and token:
+                        first_token_time = (time.perf_counter()-start)*1000
+                        yield f"data : {json.dumps({'ttfr_ms': round(first_token_time, 1)})}\n\n"
+                    
+                    if token:
+                        yield f"data : {json.dumps({'token': token})}\n\n"
+                        
+                    if chunk.get("done"):
+                        total_ms = (time.perf_counter()-start)*1000
+                        yield f"data : {json.dumps({'done': True, 'total_ms': round(total_ms, 1), 'token_count': chunk.get('eval_count',0)})}\n\n"
+                        break
+        except Exception as e:
+            yield f"data : {json.dumps({'error': str(e)})}\n\n"
+            
+    return StreamingResponse(
+        generate_stream(),
+        media_type="text/event-stream",
+        headers={
+            "X-Model": request.model,
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
